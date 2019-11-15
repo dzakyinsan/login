@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        tr,td,table{
+            border:1px solid;
+            border-collapse: collapse;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Login & Register</h1>
+    <div>
+        Username: <input type="text" id="username" /> <br><br>
+        Password: <input type="password" id="password"/> <br><br>
+        <button onclick="register()">Register</button> <button onclick="login()">Login</button>
+    </div>
+        <h1></h1>
+        <h2 style='color:green;'></h2>
+        <h2 style="color: red;"></h2>
+        <h1></h1>
+        <table>
+
+        </table>
+        <h3></h3>
+        <h3></h3>
+        <table>
+
+        </table>
+        <h4 id='countdown'></h4>
+        <p></p>
+        <p></p>
+    </center>
+</body>
+<script>
+class User{
+    constructor(a,b,c){
+        this.username=a,
+        this.password=b,
+        this.role=c
+    }
+}
+var datausers=[
+    new User('dino','12','user'),
+    new User('admin','12','admin'),
+]
+//ini untuk menampung saat inputan username dan pass sudah sama dengan data user
+var datauserlogin={}
+
+class isicart{
+    constructor(a,b,c){
+        this.produk=a,
+        this.harga=b,
+        this.gambar=c
+    }
+}
+//array ini isi list yang dijualnya
+var listdata=[
+    new isicart('ultra Milk',5000,'https://cs1.alfacart.com/product/1/A13170001041_1.jpg'),
+    new isicart('chocolatos',1000,'https://cf.shopee.co.id/file/23a5ae9957741bb83da2e4201c8b44ce'),
+    new isicart('bengbeng',2000,'https://www.mayora.com/media/1986/2017-bengbeng.png'),
+]
+//array kosong ini untuk menampung saat barang di click add to cart akan push ke array ini
+var listcart=[
+
+]
+//function ini untuk memanggil table produk yang dijualnya
+printdataProduk=(a)=>{
+    var htable=`<tr bgcolor='green'>
+                    <td>No</td>
+                    <td>Produk</td>
+                    <td>Harga</td>
+                    <td>Gambar Produk</td>
+                    <td>Action</td>
+                </tr> `
+    var isitable=''
+    a.forEach((val,index) => {
+        isitable+=`<tr>
+                    <td>${index+1}</td>
+                    <td>${val.produk}</td>
+                    <td>${val.harga}</td>
+                    <td><img src=${val.gambar} height='100px'/></td>
+                    <td><button onclick='addcart(${index})'>add to cart</button></td>
+                </tr>`
+
+    });
+    document.getElementsByTagName('table')[0].innerHTML=htable+isitable
+    document.getElementsByTagName('h3')[0].innerHTML='Keranjang belanja anda masih kosong...'
+    }
+//function ini berjalan saat di panggil, & ini akan di panggil saat di klik add to cart
+printdataCart=(a)=>{
+    var htable=`<tr bgcolor='green'>
+                    <td>No</td>
+                    <td>Produk</td>
+                    <td>Harga</td>
+                    <td>Gambar Produk</td>
+                    <td>Action</td>
+                </tr> `
+    var isitable=''
+    var jumlahBelanja=0
+    var hargaTotal=0
+    a.forEach((val,index)=>{
+        isitable+=`<tr>
+                    <td>${index+1}</td>
+                    <td>${val.produk}</td>
+                    <td>${val.harga}</td>
+                    <td><img src=${val.gambar} height='100px'/></td>
+                    <td><button onclick='delcart(${index})'>delete</button></td>
+                   </tr>`
+        jumlahBelanja++
+        hargaTotal+=val.harga
+    })
+    document.getElementsByTagName('table')[1].innerHTML=htable+isitable
+    if(jumlahBelanja!==0){
+        document.getElementsByTagName('h3')[0].innerHTML=`keranjang belanja kau terisi ${jumlahBelanja} barang cuk.. `
+        document.getElementsByTagName('p')[0].innerHTML=`<button onclick='selesai(),start()'>selesai</button>`
+        document.getElementsByTagName('h3')[1].innerHTML=`Total belanjaan anda Rp. ${hargaTotal} `
+    }else{
+        document.getElementsByTagName('h3')[0].innerHTML=`keranjang anda masih kosong`
+        document.getElementsByTagName('h3')[1].innerHTML=``
+        document.getElementsByTagName('table')[1].innerHTML=''
+        document.getElementsByTagName('p')[0].innerHTML=``
+    }
+    return hargaTotal
+}
+
+addcart=(a)=>{
+    listcart.push(listdata[a])
+    printdataCart(listcart)
+}
+
+delcart=(a)=>{
+    var konfDelete=confirm('delete cuk?')
+    if(konfDelete){
+        listcart.splice(a,1)
+        printdataCart(listcart)
+    }
+}
+//function ini jalan setelah di klik selesai, dan function start juga akan aktif karena saat di klik selesai akan menjaankan 2 function
+selesai=()=>{
+    document.getElementsByTagName('p')[0].innerHTML=`<input id='selesai' type='number'>
+                                                        <button onclick='bayar()'>bayar</button>`
+    document.getElementsByTagName('p')[1].innerHTML=``
+
+}
+
+var time=31
+var timer
+start=()=>{
+    timer=setInterval(funcWaktu,1000)// tiap 1 detik, akan menjalankan menjalankan funcWaktu(dimana timenya dikurang 1 detik)
+}
+funcWaktu=()=>{
+    time-=1//disini dikurang satu detiknya
+    document.getElementById('countdown').innerHTML=`waktu bayar mu tersisa ${time} cuk...`
+    if(time<=1){
+        clearInterval(timer)
+        listcart=[]
+        document.getElementById('countdown').innerHTML=``
+        document.getElementsByTagName('h3')[0].innerHTML=`keranjang anda masih kosong`
+        document.getElementsByTagName('h3')[1].innerHTML=``
+        document.getElementsByTagName('table')[1].innerHTML=''
+        document.getElementsByTagName('p')[0].innerHTML=``
+        time=31
+        document.getElementsByTagName('p')[1].innerHTML=`<button onclick="logoutuser()"> logout</button>`
+    }
+}
+
+bayar=()=>{
+    if(document.getElementById('selesai').value<totalbayar(listcart)){
+        alert('uangmu kurang cukk...')
+    }else if(document.getElementById('selesai').value>=totalbayar(listcart)){
+        clearInterval(timer)
+        alert(`mantap selamat menikmati cukk..
+            uang kembalian kamu ${document.getElementById('selesai').value-totalbayar(listcart)}`)
+            listcart=[]
+            document.getElementsByTagName('h3')[0].innerHTML=``
+            document.getElementsByTagName('h3')[0].innerHTML=`keranjang anda masih kosong`
+            document.getElementsByTagName('table')[1].innerHTML=''
+            document.getElementById('countdown').innerHTML=``
+            document.getElementsByTagName('p')[0].innerHTML=``
+            document.getElementsByTagName('h3')[1].innerHTML=``
+            document.getElementsByTagName('p')[1].innerHTML=`<button onclick="logoutuser()"> logout</button>`
+
+            time=31
+    }
+}
+//totalbayar dimasukin ke bayar()
+totalbayar=(parameter)=>{
+    var output=0
+    for(i=0;i<parameter.length;i++){
+        output+=parameter[i].harga
+    }
+    return output
+}
+
+
+
+
+
+
+
+
+
+
+
+
+const login=()=>{
+    var username=document.getElementById('username').value
+    var pass=document.getElementById('password').value
+    // var login=false
+    // for(var i=0;i<datausers.length;i++){
+    //     if(username==datausers[i].username&&pass==datausers[i].password){
+    //         login=true
+    //         datauserlogin=datausers[i]
+    //     }
+    // }
+    var arrbaru=datausers.filter((val)=>val.username==username&&val.password==pass)//(dino==dino&&12==12) ini untuk memfilter jadi array di arrbaru=[] cuma terisi yg username dan passnya sama kaya di inputa username dan pass
+    datauserlogin=arrbaru[0]
+    console.log(datauserlogin)
+    if(datauserlogin){
+        document.getElementsByTagName('h1')[1].innerHTML=`hai ${datauserlogin.username}`
+        if(datauserlogin.role=='admin'){
+            document.getElementsByTagName('h1')[0].innerHTML=''
+            document.getElementsByTagName('h1')[2].innerHTML='Sebagai admin kece'
+            document.getElementsByTagName('div')[0].innerHTML=''
+            document.getElementsByTagName('h2')[0].innerHTML=''
+            document.getElementsByTagName('h2')[1].innerHTML=''
+
+
+
+        }else{
+            document.getElementsByTagName('h1')[0].innerHTML=''
+            document.getElementsByTagName('h1')[2].innerHTML='Selamat Berbelanja :)'
+            document.getElementsByTagName('div')[0].innerHTML=''
+            document.getElementsByTagName('h2')[0].innerHTML=''
+            document.getElementsByTagName('h2')[1].innerHTML=''
+            printdataProduk(listdata)
+        }
+        document.getElementsByTagName('p')[1].innerHTML=`<button onclick="logoutuser()"> logout</button>`
+    }else{
+        document.getElementsByTagName('h2')[1].innerHTML='user tidak ditemukan atau password salah'
+        document.getElementsByTagName('h1')[2].innerHTML=''
+        document.getElementsByTagName('p')[1].innerHTML=``
+    }
+}
+const logoutuser=()=>{
+    var konfirmLogout=confirm('benar mau keluar cuk?')
+    if(konfirmLogout){
+        datauserlogin={}
+        document.getElementsByTagName('h1')[0].innerHTML='Login & Register'
+        document.getElementsByTagName('div')[0].innerHTML=`Username: <input type="text" id="username" /> <br><br>
+                                                            Password: <input type="password" id="password"/> <br><br>
+                                                            <button onclick="register()">Register</button> <button onclick="login()">Login</button>`
+        document.getElementsByTagName('h1')[1].innerHTML=''
+        document.getElementsByTagName('h1')[2].innerHTML=''
+        document.getElementsByTagName('p')[1].innerHTML=``
+        document.getElementsByTagName('h2')[1].innerHTML=''
+        document.getElementsByTagName('table')[0].innerHTML=''
+        document.getElementsByTagName('h3')[0].innerHTML=''
+        document.getElementsByTagName('h3')[1].innerHTML=``
+        document.getElementsByTagName('table')[1].innerHTML=''
+        
+    }
+}
+const register=()=>{
+    var username=document.getElementById('username').value
+    var pass=document.getElementById('password').value
+    datausers.push(new User(username,pass,'user'))
+    document.getElementsByTagName('h1')[1].innerHTML=''
+    document.getElementsByTagName('h2')[1].innerHTML='berhasil register'
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
